@@ -29,20 +29,21 @@ public class BookController {
 	Book book;
 	
 	//get All the books
+	
 	@GetMapping("/books")
 	public ResponseEntity<List<Book>> getAllBookDetails(){
 	 return new ResponseEntity<> (bookRepository.findAll(), HttpStatus.OK);
 	}
 	
 	//Get book by book id
-	@GetMapping("/book/{id}")
-	public Optional<Book> getBookById(@PathVariable int id) {
+	@GetMapping("/books/book/{id}")
+	public Optional<Book> getBookById(@PathVariable long id) {
 	  return bookRepository.findById(id);
 	}
 	
 	//Update Book
-	@PutMapping("/book/{id}")
-	public Book updateBook(@PathVariable(value="id") int id,@RequestBody Book updateBook){
+	@PutMapping("/addbook/{id}")
+	public Book updateBook(@PathVariable(value="id") long id,@RequestBody Book updateBook){
 		Optional<Book> bookResponse = bookRepository.findById(id);
 		bookResponse.ifPresent(b -> {
 			b.setBook_title(updateBook.getBook_title());
@@ -55,14 +56,14 @@ public class BookController {
 	}
 	
 	//Create new Book
-	@PostMapping("/book")
+	@PostMapping("/addbook")
 	public ResponseEntity<Book> addNewBook(@RequestBody Book Newbook) {
-	
+		//Newbook.setBook_id(sequenceGeneratorService.generateSequence(book.SEQUENCE_NAME));
 		return new ResponseEntity<> (bookRepository.save(Newbook), HttpStatus.CREATED);
 	}
 	
 	@DeleteMapping("/removeBook/{id}")
-	public void removeBookById(@PathVariable int id) {
+	public void removeBookById(@PathVariable long id) {
 		
 		bookRepository.deleteById(id);
 		
