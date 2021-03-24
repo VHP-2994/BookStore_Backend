@@ -6,12 +6,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sun.istack.NotNull;
 
 
 @Component
@@ -27,6 +29,9 @@ public class Wishlist {
 	private String wish_bookauthor;
 	private int wish_bookprice;
 	
+	@Lob
+	 @NotNull
+	private byte[] wish_bookimage;
 	/*
 	 * @JsonIgnore
 	 * 
@@ -75,13 +80,23 @@ public class Wishlist {
 	public void setWish_bookprice(int wish_bookprice) {
 		this.wish_bookprice = wish_bookprice;
 	}
+	
 
-	public Wishlist(long wish_id, String wish_bookname, String wish_bookauthor, int wish_bookprice) {
+	public byte[] getWish_bookimage() {
+		return wish_bookimage;
+	}
+
+	public void setWish_bookimage(byte[] wish_bookimage) {
+		this.wish_bookimage = wish_bookimage;
+	}
+
+	public Wishlist(long wish_id, String wish_bookname, String wish_bookauthor, int wish_bookprice,byte[] bookimage) {
 		super();
 		this.wish_id = wish_id;
 		this.wish_bookname = wish_bookname;
 		this.wish_bookauthor = wish_bookauthor;
 		this.wish_bookprice = wish_bookprice;
+		this.wish_bookimage = bookimage;
 		//this.book = book;
 	}
 

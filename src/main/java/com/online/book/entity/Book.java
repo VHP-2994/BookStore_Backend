@@ -1,14 +1,23 @@
 package com.online.book.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
+
+import com.sun.istack.NotNull;
 
 @Component
 @Entity
@@ -17,7 +26,7 @@ public class Book {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long book_id;
+	private long id;
 	
 	@Column(name = "book_title")
 	private String book_title;
@@ -28,7 +37,11 @@ public class Book {
 	@Column(name = "book_price")
 	private int book_price;
 
+	@Lob
+	 @NotNull
+	private byte[] bookimage;
 	
+
 	 // @OneToOne(mappedBy = "book") private Wishlist wishlist;
 	 
     
@@ -36,18 +49,21 @@ public class Book {
 	public Book() {
 		super();
 	}
-	public Book(String book_title, String book_author, int book_price) {
+	
+	public Book(long book_id, String book_title, String book_author, int book_price,byte[] bookimage) {
 		super();
+		this.id = book_id;
 		this.book_title = book_title;
 		this.book_author = book_author;
 		this.book_price = book_price;
-		//this.wishlist = wishlist;
+		this.bookimage = bookimage;
 	}
+
 	public long getBook_id() {
-		return book_id;
+		return id;
 	}
 	public void setBook_id(long book_id) {
-		this.book_id = book_id;
+		this.id = book_id;
 	}
 	public String getBook_title() {
 		return book_title;
@@ -66,6 +82,14 @@ public class Book {
 	}
 	public void setBook_price(int book_price) {
 		this.book_price = book_price;
+	}
+
+	public byte[] getBookimage() {
+		return bookimage;
+	}
+
+	public void setBookimage(byte[] bookimage) {
+		this.bookimage = bookimage;
 	}
 
 	

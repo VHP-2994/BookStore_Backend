@@ -41,6 +41,7 @@ public class WishlistController {
 			wishlist.setWish_bookname(book.get().getBook_title());
 			wishlist.setWish_bookauthor(book.get().getBook_author());
 			wishlist.setWish_bookprice(book.get().getBook_price());
+			wishlist.setWish_bookimage(book.get().getBookimage());
 		});
 		//wishlist.setBook(book.get());
 		return wishlistrepo.save(wishlist);
