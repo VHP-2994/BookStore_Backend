@@ -22,7 +22,6 @@ import com.sun.istack.NotNull;
 public class Wishlist {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long wish_id;
 	
 	private String wish_bookname;

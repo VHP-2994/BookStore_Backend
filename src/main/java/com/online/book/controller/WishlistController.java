@@ -38,6 +38,7 @@ public class WishlistController {
 		System.out.println("book details: "+ book.get());
 		Wishlist wishlist= new Wishlist();
 		book.ifPresent(b -> {
+			wishlist.setWish_id(book.get().getBook_id());
 			wishlist.setWish_bookname(book.get().getBook_title());
 			wishlist.setWish_bookauthor(book.get().getBook_author());
 			wishlist.setWish_bookprice(book.get().getBook_price());
