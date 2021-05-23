@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.online.book.entity.AddToCart;
 import com.online.book.entity.Book;
+import com.online.book.entity.User;
 import com.online.book.entity.Wishlist;
+import com.online.book.repository.UserRepository;
 import com.online.book.repository.WishlistRepository;
 
 @RestController
@@ -29,10 +32,13 @@ public class WishlistController {
 
 	@Autowired
 	Book book;
+	
+	@Autowired
+	UserRepository userRepository;
 
 	// Create new item in wishlist
-	@PostMapping("/addToWishlist/{id}")
-	public Wishlist addBookToWishlist(@PathVariable(value="id") long id) {
+	@PostMapping("/addToWishlist/{id}/{userId}")
+	public Optional<Object> addBookToWishlist(@PathVariable(value="id") long id,@PathVariable(value="userId") int userId) {
 		
 		Optional<Book> book= bookrepo.getBookById(id);
 		System.out.println("book details: "+ book.get());
@@ -45,7 +51,14 @@ public class WishlistController {
 			wishlist.setWish_bookimage(book.get().getBookimage());
 		});
 		//wishlist.setBook(book.get());
-		return wishlistrepo.save(wishlist);
+		//return wishlistrepo.save(wishlist);
+		Optional<User> userr = userRepository.findById(userId);
+    	User signInUser = userr.get();
+    	System.out.println(signInUser);
+    	return userRepository.findById(userId).map(user -> {
+    		wishlist.setUser(user);
+	            return wishlistrepo.save(wishlist);
+	        });
 	}
 	
 	@DeleteMapping("/removeWishlist/{id}")
@@ -53,8 +66,8 @@ public class WishlistController {
 		wishlistrepo.deleteById(id);
 	}
 	
-	@GetMapping("/wishlist")
-	public ResponseEntity<List<Wishlist>> getAllWishlistBooks(){
-	 return new ResponseEntity<> (wishlistrepo.findAll(), HttpStatus.OK);
+	@GetMapping("/wishlist/{userId}")
+	public List<Wishlist> getAllWishlistBooks(@PathVariable(value="userId") int userId){
+	 return wishlistrepo.findByUserId(userId);
 	}
 }

@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.online.book.entity.AddToCart;
 import com.online.book.entity.Book;
+import com.online.book.entity.User;
 import com.online.book.entity.Wishlist;
 import com.online.book.repository.CartRepository;
+import com.online.book.repository.UserRepository;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -27,9 +29,12 @@ public class AddToCartController {
 	
 	@Autowired
 	BookController bookrepo;
+	
+	@Autowired
+	UserRepository userRepository;
 
-	@PostMapping("/addToCart/{id}")
-	public AddToCart addBookToCart(@PathVariable(value="id") long id) {
+	@PostMapping("/addToCart/{id}/{userId}")
+	public Optional<AddToCart> addBookToCart(@PathVariable(value="id") long id,@PathVariable(value="userId") int userId) {
 		
 		Optional<Book> book= bookrepo.getBookById(id);
 		System.out.println("book details: "+ book.get());
@@ -40,47 +45,64 @@ public class AddToCartController {
 			addToCart.setCart_bookprice(book.get().getBook_price());
 			addToCart.setCart_bookimage(book.get().getBookimage());
 		});
-		//wishlist.setBook(book.get());
 		
+		Optional<User> userr = userRepository.findById(userId);
+    	User signInUser = userr.get();
+    	System.out.println(signInUser);
+    	return userRepository.findById(userId).map(user -> {
+			 addToCart.setUser(user);
+	            return cartRepository.save(addToCart);
+	        });
 		
-		//int sub_total = cartBooks.stream().mapToInt(e->e.getCart_bookprice()).sum();
-		
-		
-		return cartRepository.save(addToCart);
+		//return cartRepository.save(addToCart);
 	}
 	
-	@GetMapping("/cart")
-	public ResponseEntity<List<AddToCart>> getAllWishlistBooks(){
+	@GetMapping("/cart/{userId}")
+	public List<AddToCart> getAllCartBooksByUserID(@PathVariable int userId){
 		
-		int sub_total = getSubTotal();
-		
-		List<AddToCart> cartBooks = cartRepository.findAll();
+		//int sub_total = getSubTotal();
+		int sum = 0;
+		List<AddToCart> cartBooks =  cartRepository.findByUserId(userId);
 		
 		for(AddToCart cart: cartBooks) {
-			cart.setSub_total(sub_total);
+			int price = cart.getCart_bookprice();
+			sum = sum + price;
+			cart.setSub_total(sum);
 		}
 		
-	 return new ResponseEntity<> (cartRepository.findAll(), HttpStatus.OK);
+	 return cartRepository.findByUserId(userId);
 	}
 	
-	public int getSubTotal() {
-		int sum=0;
-		
-		List<AddToCart> cartBooks = cartRepository.findAll();
-         for(AddToCart cart: cartBooks) {
-			
-			int price = cart.getCart_bookprice();
-			
-			
-			sum = sum+price;
-			 
-		}
-      
-         return sum;
-	}
+	/*
+	 * public int getSubTotal() { int sum=0;
+	 * 
+	 * List<AddToCart> cartBooks = cartRepository.findByUserId(userId);
+	 * for(AddToCart cart: cartBooks) {
+	 * 
+	 * int price = cart.getCart_bookprice();
+	 * 
+	 * 
+	 * sum = sum+price;
+	 * 
+	 * }
+	 * 
+	 * return sum; }
+	 */
 	
 	@DeleteMapping("/removeFromCart/{id}")
 	public void removeBookFromWishlist(@PathVariable long id) {
 		cartRepository.deleteById(id);
+	}
+	
+	/*
+	 * @DeleteMapping("/removeFromCart/{id}") public void
+	 * removeBookFromCartByUserId(@PathVariable int userId) { List<AddToCart>
+	 * cartItemRemove = cartRepository.findByUserId(userId);
+	 * cartRepository.deleteInBatch(cartItemRemove); }
+	 */
+	
+	@GetMapping("/cartId/{id}")
+	public Optional<AddToCart> getCartItemByCartId(@PathVariable long id) {
+		return cartRepository.findById(id);
 	}
 }

@@ -1,14 +1,20 @@
 package com.online.book.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 
 @Component
@@ -28,7 +34,18 @@ public class AddToCart {
 	private byte[] cart_bookimage;
 	private int sub_total;
 	
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "userfk_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private User user;
 	
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
 	public long getCart_id() {
 		return cart_id;
 	}
@@ -67,18 +84,21 @@ public class AddToCart {
 	public void setCart_bookimage(byte[] cart_bookimage) {
 		this.cart_bookimage = cart_bookimage;
 	}
-	public AddToCart(long cart_id, String cart_bookname, String cart_bookauthor, int cart_bookprice, int sub_total,byte[] bookimage) {
+	public AddToCart(long cart_id, String cart_bookname, String cart_bookauthor, int cart_bookprice,
+			byte[] cart_bookimage, int sub_total, User user) {
 		super();
 		this.cart_id = cart_id;
 		this.cart_bookname = cart_bookname;
 		this.cart_bookauthor = cart_bookauthor;
 		this.cart_bookprice = cart_bookprice;
-		this.cart_bookimage = bookimage;
+		this.cart_bookimage = cart_bookimage;
 		this.sub_total = sub_total;
+		this.user = user;
 	}
 	public AddToCart() {
 		super();
 	}
+	
 	
 	
 	
